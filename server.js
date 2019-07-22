@@ -22,11 +22,26 @@ http.createServer(app).listen(8001, () => {
 });
 
 
+app.post("/inicio", async function (req, res){
+	var now = new Date()
+	var today = date.format(now, 'YYYY-MM-DD')
+	var a = JSON.parse(extraccion)
+	var currency = {}
+	var valores = a[0].Cube.find(function (e, arr) {
+		return e["$"].time == '2019-07-19'
+	});
+	valores.Cube.forEach(function (e, arr){
+		currency[e["$"].currency] = e["$"].currency
+	});
+	currency['EUR'] = 'EUR'
+	console.log(currency)
 
+	res.send(currency)
+});
 
-app.get("/historical/:base-:versus", async function (req, res) {
+app.get("/historical", async function (req, res) {
 	
-
+/*
 	if ((typeof req.params.base == 'string' && req.params.base.length == 3) && (typeof req.params.versus == 'string' && req.params.versus.length == 3)) {
 		var base = req.params.base.toUpperCase()
 		var versus = req.params.versus.toUpperCase()
@@ -300,7 +315,7 @@ app.get("/historical/:base-:versus", async function (req, res) {
 		
 	} else {
 		
-	}
+	}*/
 	
 });
 
@@ -308,13 +323,107 @@ app.get("/historical/:base-:versus", async function (req, res) {
 
 
 
-app.get("/latest/:base-:versus", async function (req, res) {
+app.post("/latest", async function (req, res) {
+
+	if (req.body.base == req.body.versus) {
+		var a = {
+			'base': req.body.base,
+			'vBase': req.body.vBase,
+			'versus': req.body.versus,
+			'vVersus': req.body.vBase,
+		}
+	} else if (req.body.base == 'EUR'){
+		var versus = req.body.versus
+		var vBase = parseFloat(req.body.vBase)
+		var vVersus = parseFloat(req.body.vVersus)
+		var now = new Date()
+		var today = date.format(now, 'YYYY-MM-DD')
+		var a = JSON.parse(extraccion)
+
+		var valores = a[0].Cube.find(function (e, arr) {
+			return e["$"].time == '2019-07-19'
+		});
+		
+		var currVersus = valores.Cube.find(function (e, arr) {
+			return e["$"].currency == versus
+
+		});
+
+		var cambio = vBase * currVersus["$"].rate 
+
+		var a = {
+			'base': req.body.base,
+			'vBase': req.body.vBase,
+			'versus': req.body.versus,
+			'vVersus': cambio.toFixed(4),
+		}
+	} else if (req.body.versus == 'EUR'){
+		var base = req.body.base
+		var vBase = parseFloat(req.body.vBase)
+		var vVersus = parseFloat(req.body.vVersus)
+		var now = new Date()
+		var today = date.format(now, 'YYYY-MM-DD')
+		var a = JSON.parse(extraccion)
+
+		var valores = a[0].Cube.find(function (e, arr) {
+			return e["$"].time == '2019-07-19'
+		});
+
+		var currBase = valores.Cube.find(function (e, arr) {
+			return e["$"].currency == base
+
+		});
+		
+		var cambio = vBase * (1 / currBase["$"].rate)
+
+		var a = {
+			'base': req.body.base,
+			'vBase': req.body.vBase,
+			'versus': req.body.versus,
+			'vVersus': cambio.toFixed(4),
+		}
+	}else{
+
+		var base = req.body.base
+		var versus = req.body.versus
+		var vBase = parseFloat(req.body.vBase)
+		var vVersus = parseFloat(req.body.vVersus)
+		var now = new Date()
+		var today = date.format(now, 'YYYY-MM-DD')
+		var a = JSON.parse(extraccion)
+
+		var valores = a[0].Cube.find(function (e, arr) {
+			return e["$"].time == '2019-07-19'
+		});
+
+		var currBase = valores.Cube.find(function (e, arr) {
+			return e["$"].currency == base
+
+		});
+
+		var currVersus = valores.Cube.find(function (e, arr) {
+			return e["$"].currency == versus
+
+		});
+		var cambio = vBase*((1 / currBase["$"].rate) * currVersus["$"].rate)
+
+		var a = {
+			'base': req.body.base,
+			'vBase': req.body.vBase,
+			'versus': req.body.versus,
+			'vVersus': cambio.toFixed(4),
+		}
+	}
 	
 
-	if ((typeof req.params.base == 'string' && req.params.base.length == 3) && (typeof req.params.versus == 'string' && req.params.versus.length == 3)) {
-		var base = req.params.base.toUpperCase()
-		var versus = req.params.versus.toUpperCase()
-			
+	console.log(a)
+	res.send(a)
+
+	/*if ((typeof req.body.base == 'string' && req.params.base.length == 3) && (typeof req.body.versus == 'string' && req.params.versus.length == 3)) {
+		var base = req.body.base.toUpperCase()
+		var versus = req.body.versus.toUpperCase()
+		var vBase = req.body.vBase
+		var vVersus = req.body.vVersus			
 		var now = new Date()
 		var today = date.format(now, 'YYYY-MM-DD')
 		var a = JSON.parse(extraccion)
@@ -329,12 +438,14 @@ app.get("/latest/:base-:versus", async function (req, res) {
 				"base": base,
 				"versus": versus,
 				"date": date.format(now, 'MM-DD-YYYY'),
-				"rate": 1
+				"vBase": vBase,
+				"vVersus": vVersus
 			}
 			console.log(o)
 			res.send(JSON.stringify(o));
 
-		} else if(base == 'EUR'){
+		}
+	 } *//*else if(base == 'EUR'){
 			
 
 			var currVersus = valores.Cube.find(function (e, arr) {
@@ -416,7 +527,7 @@ app.get("/latest/:base-:versus", async function (req, res) {
 		}
 	} else {
 		res.send('Escriba una moneda de 3 letras');
-	}
+	}*/
 
 });
 

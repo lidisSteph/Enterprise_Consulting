@@ -86,20 +86,20 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Moneda (Base)</div>
-                      <div id="Curr-Base" class="h5 mb-0 font-weight-bold text-gray-800">
-                        <select class=" form-control h5 mb-0 font-weight-bold text-gray-800">
-                        <option value="1" class="currency-flag currency-flag-usd currency-flag-sm">
-                          USD
-                        </option>
+                      <div  class="h5 mb-0 font-weight-bold text-gray-800">
+                        <select id="Curr-Base" class=" form-control h5 mb-0 font-weight-bold text-gray-800">
+                        <!-- <option value="USD" class="currency-flag currency-flag-usd currency-flag-sm"> -->
+                          <!-- USD -->
+                        <!-- </option> -->
                       
                       </select>
                     </div>
-                    <input id="num-base" type="text" class="form-control">
+                    <input id="num-base" value=1 type="text" class="form-control"  pattern="[0-9.]+.[0-9]*?">
 
                     </div>
 
-                    <div class="col-auto">
-                                                <i class="currency-flag currency-flag-usd currency-flag-lg text-gray-300"></i>
+                    <div id ='flag'class="col-auto">
+                            <i class="currency-flag currency-flag-usd currency-flag-lg text-gray-300"></i>
 
                      
                     </div>
@@ -115,19 +115,17 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Moneda (Versus)</div>
-                      <div id="Curr-Versus" class="h5 mb-0 font-weight-bold text-gray-800">
-                        <select class=" form-control h5 mb-0 font-weight-bold text-gray-800">
-                          <option value="1" class="currency-flag currency-flag-usd currency-flag-sm">
-                            USD
-                          </option>
+                      <div  class="h5 mb-0 font-weight-bold text-gray-800">
+                        <select id="Curr-Versus" class=" form-control h5 mb-0 font-weight-bold text-gray-800">
+                         
                     
                         </select>
                       </div>
-                      <input id="num-base" type="text" class="form-control">
+                      <input id="num-versus" value=1 type="text" class="form-control"  pattern="[0-9.]+.[0-9]*?">
                     
                     </div>
                     
-                    <div class="col-auto">
+                    <div id='flag-i' class="col-auto">
                       <i class="currency-flag currency-flag-usd currency-flag-lg text-gray-300"></i>
                     
                     
@@ -188,7 +186,7 @@
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                  <h6 class="m-0 font-weight-bold text-primary">Histórico</h6>
                   <div class="dropdown no-arrow">
                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -279,6 +277,7 @@
 
   <!-- Page level custom scripts -->
   <script src="js/demo/chart-area-demo.js"></script>
+  <script src="js/controlador.js"></script>
   <script src="js/demo/chart-pie-demo.js"></script>
 
 </body>
