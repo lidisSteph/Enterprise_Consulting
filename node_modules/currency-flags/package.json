@@ -1,0 +1,60 @@
+{
+  "_from": "git+https://github.com/transferwise/currency-flags.git",
+  "_id": "currency-flags@1.8.0",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/currency-flags",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/transferwise/currency-flags.git",
+    "rawSpec": "https://github.com/transferwise/currency-flags.git",
+    "saveSpec": "git+https://github.com/transferwise/currency-flags.git",
+    "fetchSpec": "https://github.com/transferwise/currency-flags.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/transferwise/currency-flags.git#48e8b89a695bf375fce170c52bb9300d1d6bd2e5",
+  "_spec": "https://github.com/transferwise/currency-flags.git",
+  "_where": "C:\\Users\\lidis\\OneDrive\\Documentos\\GitHub\\Enterprise_Consulting",
+  "author": {
+    "name": "oliverviljamaa"
+  },
+  "bugs": {
+    "url": "https://github.com/transferwise/currency-flags/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Flags for currency codes.",
+  "devDependencies": {
+    "clean-css-cli": "^4.1.6",
+    "imacss": "^1.0.0",
+    "imagemin-cli": "^3.0.0",
+    "release-to-github-with-changelog": "^1.2.0"
+  },
+  "files": [
+    "dist/currency-flags.css",
+    "dist/currency-flags.min.css"
+  ],
+  "homepage": "https://github.com/transferwise/currency-flags#readme",
+  "license": "MIT",
+  "name": "currency-flags",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/transferwise/currency-flags.git"
+  },
+  "scripts": {
+    "add-default-styles": "cat 'src/styles.css' 'build/currency-flags-backgrounds.css' > 'dist/currency-flags.css'",
+    "build": "npm run minify-images && npm run inline-images && npm run change-class-names && npm run add-default-styles && npm run minify-css && rm -rf build && echo 'Done.'",
+    "change-class-names": "sed -i.bak 's/imacss/currency-flag/g' build/currency-flags-backgrounds.css",
+    "inline-images": "imacss 'build/flags/*.png' > 'build/currency-flags-backgrounds.css'",
+    "minify-css": "cleancss -o 'dist/currency-flags.min.css' 'dist/currency-flags.css'",
+    "minify-images": "imagemin 'src/flags/*' --out-dir='build/flags'",
+    "release-to-github": "release-to-github-with-changelog",
+    "test": "release-to-github-with-changelog-pre-release-checks"
+  },
+  "version": "1.8.0"
+}
