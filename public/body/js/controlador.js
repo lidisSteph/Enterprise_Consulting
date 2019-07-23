@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    historicoF()
+    var myLineChart
+   
     $.ajax({
 
         url: "/inicio",
@@ -9,11 +12,9 @@ $(document).ready(function () {
 
            var data = ''
            for (var key in result) {
-               data = data + '<option value="'+key+'">'+key+'</option>';
-               
+               data = data + '<option value="'+key+'">'+key+'</option>';   
            }
-            
-           
+
             $("#Curr-Base").html(data)
             $("#Curr-Versus").html(data)
 
@@ -22,7 +23,7 @@ $(document).ready(function () {
             console.log(error);
         }
     });
-   
+
 
     $("#num-versus").change(function () {
         var a = 'base=' + $("#Curr-Base").val() + '&versus=' + $("#Curr-Versus").val() + '&vBase=' + $('#num-base').val() + '&vVersus=' + $('#num-versus').val()
@@ -57,7 +58,6 @@ $(document).ready(function () {
         if ($("#Curr-Base").val() == $("#Curr-Versus").val()){
             $('#num-versus').val($('#num-base').val())
         }else{
-           // alert(a)
             $.ajax({
 
                 url: "/latest",
@@ -84,7 +84,6 @@ $(document).ready(function () {
     $("#Curr-Base").change(function () {
         var a = 'base=' + $("#Curr-Base").val() + '&versus=' + $("#Curr-Versus").val() + '&vBase=' + $('#num-base').val() + '&vVersus=' + $('#num-versus').val()
 
-        alert(a);
         $.ajax({
 
             url: "/latest",
@@ -97,8 +96,11 @@ $(document).ready(function () {
                 $('#num-versus').val(result.vVersus)
                 var flag = '<i class="currency-flag currency-flag-' + result.base.toLowerCase()+' currency-flag-lg text-gray-300"></i>'
                 $('#flag').html(flag)
+                historicalF();
+                
 
             },
+
             error: function (error) {
                 console.log(error);
             }
@@ -111,7 +113,7 @@ $(document).ready(function () {
     $("#Curr-Versus").change(function () {
         var a = 'base=' + $("#Curr-Base").val() + '&versus=' + $("#Curr-Versus").val() + '&vBase=' + $('#num-base').val() + '&vVersus=' + $('#num-versus').val()
 
-        alert(a);
+      //  alert(a);
         $.ajax({
 
             url: "/latest",
@@ -124,6 +126,7 @@ $(document).ready(function () {
                 $('#num-versus').val(result.vVersus)
                 var flag = '<i class="currency-flag currency-flag-' + result.versus.toLowerCase() + ' currency-flag-lg text-gray-300"></i>'
                 $('#flag-i').html(flag)
+                historicalF()
 
             },
             error: function (error) {
@@ -132,4 +135,432 @@ $(document).ready(function () {
         });
 
     });
+
+
+
+
+
+
+    function historicalF(){
+        var a = 'base=' + $("#Curr-Base").val() + '&versus=' + $("#Curr-Versus").val() + '&vBase=' + $('#num-base').val() + '&vVersus=' + $('#num-versus').val() + '&fecha=' + $('#fecha-historico').val()
+        myLineChart.destroy();
+        
+        $.ajax({
+
+            url: "/historical",
+            data: a,
+            dataType: "json",
+            method: "POST",
+            success: function (result) {
+                console.log(result);
+
+                var ctx = $("#myAreaChart");
+
+                myLineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: result.days,
+                        datasets: [{
+                            label: "Rate",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(78, 115, 223, 0.05)",
+                            borderColor: "rgba(78, 115, 223, 1)",
+                            pointRadius: 3,
+                            pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHoverRadius: 3,
+                            pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            data: result.valor,
+                        }, {
+                            label: "Date",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(78, 115, 223, 0.05)",
+                            borderColor: "rgba(78, 115, 223, 1)",
+                            pointRadius: 3,
+                            pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHoverRadius: 3,
+                            pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            data: result.fechas,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 25,
+                                top: 25,
+                                bottom: 0
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                time: {
+                                    unit: 'date'
+                                },
+                                gridLines: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    maxTicksLimit: 7
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    maxTicksLimit: 5,
+                                    padding: 10,
+                                    // Include a dollar sign in the ticks
+                                    callback: function (value, index, values) {
+                                        return '' + value.toFixed(4);
+                                    }
+                                },
+                                gridLines: {
+                                    color: "rgb(234, 236, 244)",
+                                    zeroLineColor: "rgb(234, 236, 244)",
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2]
+                                }
+                            }],
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltips: {
+                            backgroundColor: "rgb(255,255,255)",
+                            bodyFontColor: "#858796",
+                            titleMarginBottom: 10,
+                            titleFontColor: '#6e707e',
+                            titleFontSize: 14,
+                            borderColor: '#dddfeb',
+                            borderWidth: 1,
+                            xPadding: 15,
+                            yPadding: 15,
+                            displayColors: false,
+                            intersect: false,
+                            mode: 'index',
+                            caretPadding: 10,
+                            callbacks: {
+                                label: function (tooltipItem, chart) {
+                                    var re = []
+
+                                    chart.datasets.forEach(function (e, arr) {
+                                        if (e.label == 'Rate') {
+                                            re.push(e.label + ': ' + tooltipItem.yLabel.toFixed(4))
+                                        } else if (e.label == 'Date') {
+                                            re.push(e.label + ': ' + e.data[tooltipItem.index])
+                                        }
+
+                                    })
+                                    return re
+
+                                }
+                            }
+                        }
+                    }
+                });
+           },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+
+
+    }
+
+
+
+
+    function removeData(chart) {
+        chart.data.labels.pop();
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data.pop();
+        });
+        chart.update();
+    }
+    function addData(chart, label, data) {
+        chart.data.labels.push(label);
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data.push(data);
+        });
+        chart.update();
+    }
+
+    Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#858796';
+
+    function historicoF() {
+        $.ajax({
+
+            url: "/historical",
+            data: 'fecha=' + $('#fecha-historico').val(),
+            dataType: "json",
+            method: "POST",
+            success: function (result) {
+                console.log(result);
+
+                var ctx = document.getElementById("myAreaChart");
+                myLineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: result.days,
+                        datasets: [{
+                            label: "Rate",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(78, 115, 223, 0.05)",
+                            borderColor: "rgba(78, 115, 223, 1)",
+                            pointRadius: 3,
+                            pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHoverRadius: 3,
+                            pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            data: result.valor,
+                        }, {
+                            label: "Date",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(78, 115, 223, 0.05)",
+                            borderColor: "rgba(78, 115, 223, 1)",
+                            pointRadius: 3,
+                            pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHoverRadius: 3,
+                            pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            data: result.fechas,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 25,
+                                top: 25,
+                                bottom: 0
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                time: {
+                                    unit: 'date'
+                                },
+                                gridLines: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    maxTicksLimit: 7
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    maxTicksLimit: 5,
+                                    padding: 10,
+                                    callback: function (value, index, values) {
+                                        return '' + value.toFixed(4);
+                                    }
+                                },
+                                gridLines: {
+                                    color: "rgb(234, 236, 244)",
+                                    zeroLineColor: "rgb(234, 236, 244)",
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2]
+                                }
+                            }],
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltips: {
+                            backgroundColor: "rgb(255,255,255)",
+                            bodyFontColor: "#858796",
+                            titleMarginBottom: 10,
+                            titleFontColor: '#6e707e',
+                            titleFontSize: 14,
+                            borderColor: '#dddfeb',
+                            borderWidth: 1,
+                            xPadding: 15,
+                            yPadding: 15,
+                            displayColors: false,
+                            intersect: false,
+                            mode: 'index',
+                            caretPadding: 10,
+                            callbacks: {
+                                label: function (tooltipItem, chart) {
+                                    var re = []
+
+                                    chart.datasets.forEach(function (e, arr) {
+                                        if (e.label == 'Rate') {
+                                            re.push(e.label + ': ' + tooltipItem.yLabel.toFixed(4))
+                                        } else if (e.label == 'Date') {
+                                            re.push(e.label + ': ' + e.data[tooltipItem.index])
+                                        }
+
+                                    })
+                                    return re
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    }
+
+    $("#fecha-historico").change(function () {
+        var a = 'base=' + $("#Curr-Base").val() + '&versus=' + $("#Curr-Versus").val() + '&vBase=' + $('#num-base').val() + '&vVersus=' + $('#num-versus').val() + '&fecha=' + $('#fecha-historico').val()
+
+        myLineChart.destroy();
+        $.ajax({
+
+            url: "/historical",
+            data: a,
+            dataType: "json",
+            method: "POST",
+            success: function (result) {
+                console.log(result);
+
+                var ctx = $("#myAreaChart");
+
+                myLineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: result.days,
+                        datasets: [{
+                            label: "Rate",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(78, 115, 223, 0.05)",
+                            borderColor: "rgba(78, 115, 223, 1)",
+                            pointRadius: 3,
+                            pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHoverRadius: 3,
+                            pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            data: result.valor,
+                        }, {
+                            label: "Date",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(78, 115, 223, 0.05)",
+                            borderColor: "rgba(78, 115, 223, 1)",
+                            pointRadius: 3,
+                            pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHoverRadius: 3,
+                            pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            data: result.fechas,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 25,
+                                top: 25,
+                                bottom: 0
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                time: {
+                                    unit: 'date'
+                                },
+                                gridLines: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    maxTicksLimit: 7
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    maxTicksLimit: 5,
+                                    padding: 10,
+                                    // Include a dollar sign in the ticks
+                                    callback: function (value, index, values) {
+                                        return '' + value.toFixed(4);
+                                    }
+                                },
+                                gridLines: {
+                                    color: "rgb(234, 236, 244)",
+                                    zeroLineColor: "rgb(234, 236, 244)",
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2]
+                                }
+                            }],
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltips: {
+                            backgroundColor: "rgb(255,255,255)",
+                            bodyFontColor: "#858796",
+                            titleMarginBottom: 10,
+                            titleFontColor: '#6e707e',
+                            titleFontSize: 14,
+                            borderColor: '#dddfeb',
+                            borderWidth: 1,
+                            xPadding: 15,
+                            yPadding: 15,
+                            displayColors: false,
+                            intersect: false,
+                            mode: 'index',
+                            caretPadding: 10,
+                            callbacks: {
+                                label: function (tooltipItem, chart) {
+                                    var re = []
+
+                                    chart.datasets.forEach(function (e, arr) {
+                                        if (e.label == 'Rate') {
+                                            re.push(e.label + ': ' + tooltipItem.yLabel.toFixed(4))
+                                        } else if (e.label == 'Date') {
+                                            re.push(e.label + ': ' + e.data[tooltipItem.index])
+                                        }
+
+                                    })
+                                    return re
+
+                                }
+                            }
+                        }
+                    }
+                });
+
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    });
+
+
 });

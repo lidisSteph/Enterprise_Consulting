@@ -22,300 +22,345 @@ http.createServer(app).listen(8001, () => {
 });
 
 
-app.post("/inicio", async function (req, res){
+app.post("/inicio", function (req, res){
 	var now = new Date()
 	var today = date.format(now, 'YYYY-MM-DD')
 	var a = JSON.parse(extraccion)
 	var currency = {}
 	var valores = a[0].Cube.find(function (e, arr) {
-		return e["$"].time == '2019-07-19'
+		return e["$"].time == today
 	});
 	valores.Cube.forEach(function (e, arr){
 		currency[e["$"].currency] = e["$"].currency
 	});
+
+
 	currency['EUR'] = 'EUR'
 	console.log(currency)
+
+	
 
 	res.send(currency)
 });
 
-app.get("/historical", async function (req, res) {
+app.post("/historical",  function (req, res) {
+	//var dt = new Date(req.query.date)
+	//var date_p = date.format(dt, 'YYYY-MM-DD')
+	//console.log(req.query.date)
+	var base = req.body.base
+	var versus  = req.body.versus
+	console.log('base: '+base+' versus: '+versus)
+	var tipo = req.body.fecha
+	var now = new Date()
+	var st = new Date()
+	// var mes = new Date()
+	// var meses = new Date()
 	
-/*
-	if ((typeof req.params.base == 'string' && req.params.base.length == 3) && (typeof req.params.versus == 'string' && req.params.versus.length == 3)) {
-		var base = req.params.base.toUpperCase()
-		var versus = req.params.versus.toUpperCase()
+	// mes.setDate(mes.getDate() - 30)
+	// meses.setDate(meses.getDate() - 90)
+	var start 
+	if (tipo==1) {
+		st.setDate(st.getDate() - 7)
+	}else if(tipo == 2){
+		st.setDate(st.getDate() - 30)
+	}else if(tipo == 3){
+		st.setDate(st.getDate() - 90)
+	}
 
-		var dt = new Date(req.query.date)
-		var date_p = date.format(dt, 'YYYY-MM-DD')
-		console.log(req.query.date)
-		var st = new Date(req.query.start)
-		var start = date.format(st, 'YYYY-MM-DD')
-		var en = new Date(req.query.end)
-		var end = date.format(en, 'YYYY-MM-DD')
-		var now = new Date()
-		var today = date.format(now, 'YYYY-MM-DD')
-
-		var a = JSON.parse(extraccion)
-		var rangoFechas = []
-		var rangoCurrency = []
-		var registro = {}
-		
-		
-		if (req.query.date) {
-			///////////////////////////////////////////////
-			
-			var currFecha = a[0].Cube.find(function (e, arr) {
-				return e["$"].time = date_p
-			});
-
-			
-			if (base == 'EUR' && versus =='EUR') {
-
-				var o = {
-					"base": base,
-					"versus": versus,
-					"date": date.format(dt, 'MM-DD-YYYY'),
-					"rate": 1
-				}
-				console.log(o)
-				res.send(JSON.stringify(o));
-
-			}else if(base == 'EUR'){
-				var currVersus = currFecha.Cube.find(function (e, arr) {
-					return e["$"].currency == versus
-				});
-				
-				if (currVersus) {
-					var o = {
-						"base": base,
-						"versus": versus,
-						"date": date.format(dt, 'MM-DD-YYYY'),
-						"rate": parseFloat(currVersus["$"].rate)
-					}
-					console.log(o)
-					res.send(JSON.stringify(o));
-				}else{
-					res.send('No se encuentra la moneda '+versus)
-				}
-			}else if(versus == 'EUR'){
-				var currBase = currFecha.Cube.find(function (e, arr) {
-					return e["$"].currency == base
-				});
-				
-				if (currBase) {
-					var cambio = 1 / currBase["$"].rate
-					var o = {
-						"base": base,
-						"versus": versus,
-						"date": date.format(dt, 'MM-DD-YYYY'),
-						"rate": parseFloat(cambio.toFixed(4))
-					}
-					console.log(o)
-					res.send(JSON.stringify(o));
-				} else {
-					res.send('No se encuentra la moneda ' + base)
-				}
-			}else{
-				
-				var currBase = currFecha.Cube.find(function (e, arr) {
-					return e["$"].currency == base
-				});
-				
-				if(currBase){
-					var currVersus = currFecha.Cube.find(function (e, arr) {
-						return e["$"].currency == versus
-					});
-				
-					if (currVersus) {
-						var cambio = (1 / currBase["$"].rate) * currVersus["$"].rate
-						
-						var o = {
-							"base": base,
-							"versus": versus,
-							"date": date.format(dt, 'MM-DD-YYYY'),
-							"rate": parseFloat(cambio.toFixed(4))
-						}
-						console.log(o)
-						res.send(JSON.stringify(o));
+	var end = date.format(now, 'YYYY-MM-DD')
 	
-					}else{
-						res.send('No se encuentra la moneda ' + versus)	
-					}
-				}else{
-					res.send('No se encuentra la moneda ' + base)	
-				}
-			}
+	var start = date.format(st, 'YYYY-MM-DD')
+	//var startMonths = date.format(meses, 'YYYY-MM-DD')
+	//console.log('start: '+start+' end: '+end)
+	var a = JSON.parse(extraccion)
+	var rangoFechas = []
+	var rangoCurrency = []
+	var registro = []
 
-			//////////////////////////////////////////////////
-		}else{
+	//res.send(start)
+	// var en = new Date(req.query.end)
+	// var end = date.format(en, 'YYYY-MM-DD')
+	// var now = new Date()
+	// var today = date.format(now, 'YYYY-MM-DD')
+	var days = []
+	//var d = new Date();
+	var weekday = new Array(7);
+	weekday[0] = "Sunday";
+	weekday[1] = "Monday";
+	weekday[2] = "Tuesday";
+	weekday[3] = "Wednesday";
+	weekday[4] = "Thursday";
+	weekday[5] = "Friday";
+	weekday[6] = "Saturday";
+	//if (tipo == 1) {
+		if(base == versus){
+
 			a[0].Cube.forEach(function (e, arr) {
 				var dateF = new Date(e["$"].time)
+				dateF.setDate(dateF.getDate() + 1)
 				var dateE = date.format(dateF, 'YYYY-MM-DD')
+				//console.log(dateE)
+
 
 				if (dateE >= start && dateE <= end) {
 					rangoFechas.push(e["$"].time)
+					days.push(weekday[dateF.getDay()])
 					rangoCurrency.push(e)
-				} 
+				}
+			});
+			rangoFechas.sort()
+			days.reverse()
+			//console.log(rangoCurrency)
+			//console.log(rangoFechas)
+			//console.log(days)
+
+
+			rangoFechas.forEach(function (fech, arr) {
+				/*var currency = rangoCurrency.find(function(e, arr){
+					return e["$"].time == fech
+				})*/
+				registro.push(1)
+
+			});
+			// console.log("buahhhh "+registro)
+			// var o = {
+			// 	"days": days,
+			// 	"valor": registro
+			// }
+			// res.send(o)
+		}else if(base == 'EUR'){
+
+			a[0].Cube.forEach(function (e, arr) {
+				var dateF = new Date(e["$"].time)
+				dateF.setDate(dateF.getDate() + 1)
+				var dateE = date.format(dateF, 'YYYY-MM-DD')
+				//console.log(dateE)
+
+
+				if (dateE >= start && dateE <= end) {
+					rangoFechas.push(e["$"].time)
+					days.push(weekday[dateF.getDay()])
+					rangoCurrency.push(e)
+				}
+			});
+			rangoFechas.sort()
+			days.reverse()
+			// console.log(rangoCurrency)
+			// console.log(rangoFechas)
+			// console.log(days)
+
+
+			rangoFechas.forEach(function (fech, arr) {
+				var currency = rangoCurrency.find(function(e, arr){
+					return e["$"].time == fech
+				})
+				var currVersus = currency.Cube.find(function(e, arr){
+					return e["$"].currency == versus
+				})
+				registro.push(currVersus["$"].rate)
+
 			});
 
-			rangoFechas.sort();
-			if (rangoFechas.length != 0) {
-				if (base == 'EUR' && versus == 'EUR') {
-					rangoFechas.forEach(function (da, arr) {
-
-						var an = new Date(da)
-						var f = date.format(an, 'MM-DD-YYYY')
-						registro[f] = 1
+		}else if(versus == 'EUR'){
+			a[0].Cube.forEach(function (e, arr) {
+				var dateF = new Date(e["$"].time)
+				dateF.setDate(dateF.getDate() + 1)
+				var dateE = date.format(dateF, 'YYYY-MM-DD')
+				//console.log(dateE)
 
 
-
-					});
-					var o = {
-						"base": base,
-						"versus": versus,
-						"start": date.format(st, 'MM-DD-YYYY'),
-						"end": date.format(en, 'MM-DD-YYYY'),
-						"rates": registro
-					}
-					console.log(o)
-					res.send(JSON.stringify(o));
-				} else if (base == 'EUR') {
-					var flag = 1
-					rangoFechas.forEach(function (da, arr) {
-						var fechaE = rangoCurrency.find(function (e, arr) {
-							return e["$"].time == da
-						})
-						var currVersus = fechaE.Cube.find(function (e, arr) {
-							return e["$"].currency == versus
-
-						})
-
-						if (!currVersus) {
-							flag = 0
-						} else {
-
-							var an = new Date(da)
-							var f = date.format(an, 'MM-DD-YYYY')
-							registro[f] = parseFloat(currVersus["$"].rate)
-
-
-						}
-					})
-					if (flag == 1) {
-						var o = {
-							"base": base,
-							"versus": versus,
-							"start": date.format(st, 'MM-DD-YYYY'),
-							"end": date.format(en, 'MM-DD-YYYY'),
-							"rates": registro
-						}
-						console.log(o)
-						res.send(JSON.stringify(o));
-					} else {
-						res.send('La moneda ' + versus + ' no se encuentra')
-					}
-
-
-				} else if (versus == 'EUR') {
-					var flag = 1
-					rangoFechas.forEach(function (da, arr) {
-						var fechaE = rangoCurrency.find(function (e, arr) {
-							return e["$"].time == da
-						})
-						var currBase = fechaE.Cube.find(function (e, arr) {
-							return e["$"].currency == base
-
-						})
-
-						if (!currBase) {
-							flag = 0
-						} else {
-							var cambio = 1 / currBase["$"].rate
-
-							var an = new Date(da)
-							var f = date.format(an, 'MM-DD-YYYY')
-							registro[f] = parseFloat(cambio.toFixed(4))
-
-
-						}
-					})
-					if (flag == 1) {
-						var o = {
-							"base": base,
-							"versus": versus,
-							"start": date.format(st, 'MM-DD-YYYY'),
-							"end": date.format(en, 'MM-DD-YYYY'),
-							"rates": registro
-						}
-						console.log(o)
-						res.send(JSON.stringify(o));
-					} else {
-						res.send('La moneda ' + versus + ' no se encuentra')
-					}
-
-				} else {
-
-					rangoFechas.forEach(function (da, arr) {
-
-						var fechaE = rangoCurrency.find(function (e, arr) {
-							return e["$"].time == da
-						})
-						var currBase = fechaE.Cube.find(function (e, arr) {
-							return e["$"].currency == base
-
-						})
-
-						if (!currBase) {
-							flag = 0
-						} else {
-							var currVersus = fechaE.Cube.find(function (e, arr) {
-								return e["$"].currency == versus
-							})
-
-							if (!currVersus) {
-								flag = 2
-							} else {
-								var cambio = (1 / currBase["$"].rate) * currVersus["$"].rate
-								var d = new Date(da)
-								d.setDate(d.getDate() + 1)
-								registro[date.format(d, 'MM-DD-YYYY')] = parseFloat(cambio.toFixed(4))
-
-							}
-
-						}
-					})
-
-					if (flag == 0) {
-						res.send('La moneda ' + base + ' no se encuentra')
-					} else {
-						if (flag == 2) {
-							res.send('La moneda ' + versus + ' no se encuentra')
-
-						} else {
-							var o = {
-								"base": base,
-								"versus": versus,
-								"start": date.format(st, 'MM-DD-YYYY'),
-								"end": date.format(en, 'MM-DD-YYYY'),
-								"rates": registro
-							}
-							console.log(o)
-							res.send(JSON.stringify(o));
-
-						}
-					}
-
+				if (dateE >= start && dateE <= end) {
+					rangoFechas.push(e["$"].time)
+					days.push(weekday[dateF.getDay()])
+					rangoCurrency.push(e)
 				}
+			});
+			rangoFechas.sort()
+			days.reverse()
 
-			} else {
-				res.send('No hay divisas en el rango de ' + start + ' a ' + end)
-			}	
+			rangoFechas.forEach(function (fech, arr) {
+				var currency = rangoCurrency.find(function (e, arr) {
+					return e["$"].time == fech
+				})
+				var currBase = currency.Cube.find(function (e, arr) {
+					return e["$"].currency == base
+				})
+				registro.push(1/currBase["$"].rate)
+
+			});
+
+		}else{
+			a[0].Cube.forEach(function (e, arr) {
+				var dateF = new Date(e["$"].time)
+				dateF.setDate(dateF.getDate() + 1)
+				var dateE = date.format(dateF, 'YYYY-MM-DD')
+				//console.log(dateE)
+
+
+				if (dateE >= start && dateE <= end) {
+					rangoFechas.push(e["$"].time)
+					days.push(weekday[dateF.getDay()])
+					rangoCurrency.push(e)
+				}
+			});
+			rangoFechas.sort()
+			days.reverse()
+
+			rangoFechas.forEach(function (fech, arr) {
+				var currency = rangoCurrency.find(function (e, arr) {
+					return e["$"].time == fech
+				})
+				var currBase = currency.Cube.find(function (e, arr) {
+					return e["$"].currency == base
+				})
+				var currVersus = currency.Cube.find(function (e, arr) {
+					return e["$"].currency == versus
+				})
+
+				registro.push((1 / currBase["$"].rate) * currVersus["$"].rate)
+
+			});
 		}
-		
-	} else {
-		
-	}*/
+	// } else if(tipo==2){
+	// 	if (base == versus) {
+
+	// 		a[0].Cube.forEach(function (e, arr) {
+	// 			var dateF = new Date(e["$"].time)
+	// 			dateF.setDate(dateF.getDate() + 1)
+	// 			var dateE = date.format(dateF, 'YYYY-MM-DD')
+
+
+	// 			if (dateE >= startWeek && dateE <= end) {
+	// 				rangoFechas.push(e["$"].time)
+	// 				days.push(weekday[dateF.getDay()])
+	// 				rangoCurrency.push(e)
+	// 			}
+	// 		});
+	// 		rangoFechas.sort()
+	// 		days.reverse()
+	// 		//console.log(rangoCurrency)
+	// 		//console.log(rangoFechas)
+	// 		//console.log(days)
+
+
+	// 		rangoFechas.forEach(function (fech, arr) {
+	// 			/*var currency = rangoCurrency.find(function(e, arr){
+	// 				return e["$"].time == fech
+	// 			})*/
+	// 			registro.push(1)
+
+	// 		});
+	// 		// console.log("buahhhh "+registro)
+	// 		// var o = {
+	// 		// 	"days": days,
+	// 		// 	"valor": registro
+	// 		// }
+	// 		// res.send(o)
+	// 	} else if (base == 'EUR') {
+
+	// 		a[0].Cube.forEach(function (e, arr) {
+	// 			var dateF = new Date(e["$"].time)
+	// 			dateF.setDate(dateF.getDate() + 1)
+	// 			var dateE = date.format(dateF, 'YYYY-MM-DD')
+	// 			//console.log(dateE)
+
+
+	// 			if (dateE >= startWeek && dateE <= end) {
+	// 				rangoFechas.push(e["$"].time)
+	// 				days.push(weekday[dateF.getDay()])
+	// 				rangoCurrency.push(e)
+	// 			}
+	// 		});
+	// 		rangoFechas.sort()
+	// 		days.reverse()
+	// 		// console.log(rangoCurrency)
+	// 		// console.log(rangoFechas)
+	// 		// console.log(days)
+
+
+	// 		rangoFechas.forEach(function (fech, arr) {
+	// 			var currency = rangoCurrency.find(function (e, arr) {
+	// 				return e["$"].time == fech
+	// 			})
+	// 			var currVersus = currency.Cube.find(function (e, arr) {
+	// 				return e["$"].currency == versus
+	// 			})
+	// 			registro.push(currVersus["$"].rate)
+
+	// 		});
+
+	// 	} else if (versus == 'EUR') {
+	// 		a[0].Cube.forEach(function (e, arr) {
+	// 			var dateF = new Date(e["$"].time)
+	// 			dateF.setDate(dateF.getDate() + 1)
+	// 			var dateE = date.format(dateF, 'YYYY-MM-DD')
+	// 			//console.log(dateE)
+
+
+	// 			if (dateE >= startWeek && dateE <= end) {
+	// 				rangoFechas.push(e["$"].time)
+	// 				days.push(weekday[dateF.getDay()])
+	// 				rangoCurrency.push(e)
+	// 			}
+	// 		});
+	// 		rangoFechas.sort()
+	// 		days.reverse()
+
+	// 		rangoFechas.forEach(function (fech, arr) {
+	// 			var currency = rangoCurrency.find(function (e, arr) {
+	// 				return e["$"].time == fech
+	// 			})
+	// 			var currBase = currency.Cube.find(function (e, arr) {
+	// 				return e["$"].currency == base
+	// 			})
+	// 			registro.push(1 / currBase["$"].rate)
+
+	// 		});
+
+	// 	} else {
+	// 		a[0].Cube.forEach(function (e, arr) {
+	// 			var dateF = new Date(e["$"].time)
+	// 			dateF.setDate(dateF.getDate() + 1)
+	// 			var dateE = date.format(dateF, 'YYYY-MM-DD')
+	// 			//console.log(dateE)
+
+
+	// 			if (dateE >= startWeek && dateE <= end) {
+	// 				rangoFechas.push(e["$"].time)
+	// 				days.push(weekday[dateF.getDay()])
+	// 				rangoCurrency.push(e)
+	// 			}
+	// 		});
+	// 		rangoFechas.sort()
+	// 		days.reverse()
+
+	// 		rangoFechas.forEach(function (fech, arr) {
+	// 			var currency = rangoCurrency.find(function (e, arr) {
+	// 				return e["$"].time == fech
+	// 			})
+	// 			var currBase = currency.Cube.find(function (e, arr) {
+	// 				return e["$"].currency == base
+	// 			})
+	// 			var currVersus = currency.Cube.find(function (e, arr) {
+	// 				return e["$"].currency == versus
+	// 			})
+
+	// 			registro.push((1 / currBase["$"].rate) * currVersus["$"].rate)
+
+	// 		});
+	// 	}
+	// }else if(tipo == 3){
+
+	// }
+	console.log(registro)
+	var o = {
+		"days": days,
+		"valor": registro,
+		"fechas": rangoFechas
+	}
+	res.send(o)
+	
+	
 	
 });
 
@@ -341,7 +386,7 @@ app.post("/latest", async function (req, res) {
 		var a = JSON.parse(extraccion)
 
 		var valores = a[0].Cube.find(function (e, arr) {
-			return e["$"].time == '2019-07-19'
+			return e["$"].time == today
 		});
 		
 		var currVersus = valores.Cube.find(function (e, arr) {
@@ -366,7 +411,7 @@ app.post("/latest", async function (req, res) {
 		var a = JSON.parse(extraccion)
 
 		var valores = a[0].Cube.find(function (e, arr) {
-			return e["$"].time == '2019-07-19'
+			return e["$"].time == today
 		});
 
 		var currBase = valores.Cube.find(function (e, arr) {
@@ -393,7 +438,7 @@ app.post("/latest", async function (req, res) {
 		var a = JSON.parse(extraccion)
 
 		var valores = a[0].Cube.find(function (e, arr) {
-			return e["$"].time == '2019-07-19'
+			return e["$"].time == today
 		});
 
 		var currBase = valores.Cube.find(function (e, arr) {
@@ -542,7 +587,7 @@ app.get("/latest/:id", async function (req, res) {
 	
 
     var valores = a[0].Cube.find(function (e, arr) {
-      return e["$"].time == '2019-07-19'
+      return e["$"].time == today
     });
 
     if (currency == 'EUR') {
