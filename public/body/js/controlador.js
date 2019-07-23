@@ -1,5 +1,6 @@
 $(document).ready(function () {
     historicoF()
+   
     var myLineChart
    
     $.ajax({
@@ -17,6 +18,7 @@ $(document).ready(function () {
 
             $("#Curr-Base").html(data)
             $("#Curr-Versus").html(data)
+            cambio()
 
         },
         error: function (error) {
@@ -97,6 +99,7 @@ $(document).ready(function () {
                 var flag = '<i class="currency-flag currency-flag-' + result.base.toLowerCase()+' currency-flag-lg text-gray-300"></i>'
                 $('#flag').html(flag)
                 historicalF();
+                cambio()
                 
 
             },
@@ -127,6 +130,7 @@ $(document).ready(function () {
                 var flag = '<i class="currency-flag currency-flag-' + result.versus.toLowerCase() + ' currency-flag-lg text-gray-300"></i>'
                 $('#flag-i').html(flag)
                 historicalF()
+                
 
             },
             error: function (error) {
@@ -561,6 +565,59 @@ $(document).ready(function () {
         });
 
     });
+
+
+    function cambio(){
+        var a = 'base=' + $("#Curr-Base").val() + '&versus=' + $("#Curr-Versus").val() + '&vBase=' + $('#num-base').val() + '&vVersus=' + $('#num-versus').val()
+        //alert(a)
+        $.ajax({
+
+            url: "/cambio",
+            data: a,
+            dataType: "json",
+            method: "POST",
+            success: function (result) {
+                console.log(result.rates);
+                var lista = ''
+                 for(var key in result.rates){
+                     console.log(key)
+
+                     lista = lista + '<li class="nav-item active">' + 
+                         '<a class="nav-link" style="padding-top: 0rem;padding-bottom: 0rem">' + 
+                         '<i class="currency-flag currency-flag-' + key.toLowerCase() + ' currency-flag-sm text-gray-300"></i>'+
+                         '<span >' +' '+ key + ' ' + result.rates[key] + '</span>' +
+                     '</a>'+
+                     ' </li>'
+                    
+                     
+                     
+                 }
+                 console.log(lista)
+                $('#lista-cambios').html(lista)
+                $('#Nombre-moneda').html('Tipo de cambio '+result.base)
+                // '<a class="nav-link">' +
+                //     '< i class="currency-flag currency-flag-' + key.toLowerCase() + ' currency-flag-sm text-gray-300" ></i >' +
+                //     '<span >' + key.toLowerCase() + ' ' + result.rates[key] + '</span>' +
+                //     '</a>' +
+                //     console.log(e)
+                // //    lista = lista + '< i class="currency-flag currency-flag-'usd' currency-flag-sm text-gray-300" ></i >'
+                // //         '<span >Cambio de Moneda</span>'
+                // })
+                // var data = ''
+                // for (var key in result) {
+                //     data = data + '<option value="' + key + '">' + key + '</option>';
+                // }
+
+                // $("#Curr-Base").html(data)
+                // $("#Curr-Versus").html(data)
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    }
 
 
 });
