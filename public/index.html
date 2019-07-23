@@ -60,9 +60,13 @@
       <li class="nav-item active">
         <a class="nav-link" >
           <span id="Nombre-moneda"></span>
+          <!-- <div id="flag-nav"><i class="currency-flag currency-flag-usd currency-flag-sm text-gray-300"></i></div>
+   -->
+          <div style="font-size: 0.7rem" id="Fecha-moneda"></div>
         </a>
       </li>
-      <div id='lista-cambios'>
+      
+      <div id='lista-cambios' data-spy="scroll"  data-offset="0" class="scrollspy-example">
       </div>
       
       <!-- <li class="nav-item active">
@@ -163,14 +167,16 @@
                         <!-- <div class="col"> -->
                           <!-- <div class="progress progress-sm mr-2"> -->
                             <!-- <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div> -->
-                          <div class="col-auto">
-                            <div class="h6 mb-0 mr-3 font-weight-bold text-gray-800"></div>
-                            <div class="col">
+                          <div class="col-auto col-xl-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="h6 mb-0 mr-3 font-weight-bold text-gray-800">
                               <select id="fecha-historico" class=" form-control h5 mb-0 font-weight-bold text-gray-800">
                                 <option selected value=1>1 semana </option>
                                 <option value=2>1 mes</option>
                                 <option value=3>3 meses</option>
-                              </select>    
+                              </select>
+                            </div>
+                            <div class="col">
+                                
                             </div>
                           </div>
                           

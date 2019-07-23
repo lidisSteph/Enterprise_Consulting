@@ -578,6 +578,7 @@ $(document).ready(function () {
             method: "POST",
             success: function (result) {
                 console.log(result.rates);
+                console.log(result)
                 var lista = ''
                  for(var key in result.rates){
                      console.log(key)
@@ -592,25 +593,11 @@ $(document).ready(function () {
                      
                      
                  }
-                 console.log(lista)
+                 //console.log(lista)
                 $('#lista-cambios').html(lista)
-                $('#Nombre-moneda').html('Tipo de cambio '+result.base)
-                // '<a class="nav-link">' +
-                //     '< i class="currency-flag currency-flag-' + key.toLowerCase() + ' currency-flag-sm text-gray-300" ></i >' +
-                //     '<span >' + key.toLowerCase() + ' ' + result.rates[key] + '</span>' +
-                //     '</a>' +
-                //     console.log(e)
-                // //    lista = lista + '< i class="currency-flag currency-flag-'usd' currency-flag-sm text-gray-300" ></i >'
-                // //         '<span >Cambio de Moneda</span>'
-                // })
-                // var data = ''
-                // for (var key in result) {
-                //     data = data + '<option value="' + key + '">' + key + '</option>';
-                // }
-
-                // $("#Curr-Base").html(data)
-                // $("#Curr-Versus").html(data)
-
+                $('#Nombre-moneda').html('Tipo de cambio ' + result.base + '<i style="margin-left: 0.6rem" class="currency-flag currency-flag-' + result.base.toLowerCase() + ' currency-flag-sm text-gray-300"></i>')
+                $('#Fecha-moneda').html('para hoy ' + result.date)
+                
             },
             error: function (error) {
                 console.log(error);
