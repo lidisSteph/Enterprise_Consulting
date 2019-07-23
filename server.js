@@ -1,4 +1,6 @@
 var express = require('express')
+var app = express()
+//var morgan = require('morgan')
 var bodyParser = require("body-parser");
 var date = require('date-and-time')
 var https = require("https")
@@ -8,13 +10,14 @@ var parser = new xml2js.Parser();
 var $ = require('jquery')
 var bVRegx = /([\w]{3}) - ([\w]{3})/
 
-var app = express()
-
-process.env.PORT = process.env.PORT || 8001;
+app.set('port', process.env.PORT || 8001)
+//process.env.PORT = process.env.PORT || 8001;
+app.set('json spaces', 2)
+app.set()
 
 app.use(express.static("public"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
  
 http.createServer(app).listen(8001, () => {
