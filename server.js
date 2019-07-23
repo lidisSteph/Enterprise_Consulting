@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
  
 http.createServer(app).listen(9000, () => {
-  console.log('Server started at http://localhost:900');
+  console.log('Server started at http://localhost:9000');
 });
 
 
