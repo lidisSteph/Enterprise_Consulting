@@ -1,5 +1,6 @@
 var express = require('express')
 var app = express()
+var path = require('path')
 //var morgan = require('morgan')
 var bodyParser = require("body-parser");
 var date = require('date-and-time')
@@ -12,10 +13,9 @@ var bVRegx = /([\w]{3}) - ([\w]{3})/
 
 app.set('port', process.env.PORT || 8001)
 //process.env.PORT = process.env.PORT || 8001;
-app.set('json spaces', 2)
-app.set()
 
-app.use(express.static("public"));
+
+app.use(express.static(path.join(__dirname,'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
