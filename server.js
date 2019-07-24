@@ -11,8 +11,8 @@ var parser = new xml2js.Parser();
 var $ = require('jquery')
 var bVRegx = /([\w]{3}) - ([\w]{3})/
 
-//app.set('port', process.env.PORT || 8001)
-app.listen(process.env.PORT || 9000)
+app.set('port', process.env.PORT || 8001)
+//app.listen(process.env.PORT || 9000)
 //process.env.PORT = process.env.PORT || 8001;
 
 
@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
  
-http.createServer(app).listen(9000, () => {
+http.createServer(app).listen(8001, () => {
   console.log('Server started at http://localhost:9000');
 });
 
