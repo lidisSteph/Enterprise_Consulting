@@ -21,7 +21,7 @@
     "currency-flags": "git+https://github.com/transferwise/currency-flags.git",
     "date-and-time": "^0.8.1",
     "express": "^4.17.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "json-pretty-html": "^1.1.6",
     "npm": "^6.10.1",
     "xml2js": "^0.4.19"
