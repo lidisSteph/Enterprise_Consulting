@@ -19,7 +19,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "currency-flags": "git+https://github.com/transferwise/currency-flags.git",
-    "date-and-time": "^0.8.1",
+    "date-and-time": "^0.14.2",
     "express": "^4.17.1",
     "jquery": "^3.4.1",
     "json-pretty-html": "^1.1.6",
